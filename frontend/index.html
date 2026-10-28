@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CloudForge | AMI & EC2 Manager</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Inter, Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f8fc;
+            color: #172033;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #ffffff;
+            border-right: 1px solid #e5eaf0;
+            padding: 25px 18px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 10px 30px;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #ff9900, #ffb84d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .logo h2 {
+            font-size: 20px;
+        }
+
+        .logo span {
+            color: #ff9900;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            color: #8993a4;
+            margin: 20px 12px 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 13px 14px;
+            margin: 5px 0;
+            border-radius: 9px;
+            color: #647084;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .nav-item:hover {
+            background: #fff4e5;
+            color: #e88900;
+        }
+
+        .nav-item.active {
+            background: #fff1db;
+            color: #e88900;
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+
+        .header {
+            height: 72px;
+            background: white;
+            border-bottom: 1px solid #e5eaf0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 35px;
+        }
+
+        .search {
+            width: 420px;
+            position: relative;
+        }
+
+        .search input {
+            width: 100%;
+            padding: 12px 15px 12px 42px;
+            border: 1px solid #dfe5ec;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+            background: #f8fafc;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 12px;
+            color: #8792a3;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .profile-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #ff9900;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .profile-text strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .profile-text small {
+            color: #8792a3;
+        }
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding: 35px;
+        }
+
+        .page-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            font-size: 27px;
+            margin-bottom: 7px;
+        }
+
+        .page-title p {
+            color: #7b8797;
+            font-size: 14px;
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #ff9900;
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 153, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: #e88a00;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #445064;
+            border: 1px solid #dfe5ec;
+        }
+
+        /* ================= STATS ================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e6ebf1;
+            border-radius: 12px;
+            padding: 22px;
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label {
+            color: #7c8797;
+            font-size: 13px;
+        }
+
+        .stat-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+        }
+
+        .orange {
+            background: #fff1dc;
+            color: #ed8b00;
+        }
+
+        .blue {
+            background: #eaf3ff;
+            color: #3d83df;
+        }
+
+        .green {
+            background: #e9f9ef;
+            color: #22a05a;
+        }
+
+        .purple {
+            background: #f2edff;
+            color: #7752d8;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 13px;
+        }
+
+        .stat-change {
+            margin-top: 6px;
+            color: #22a05a;
+            font-size: 12px;
+        }
+
+        /* ================= GRID ================= */
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 22px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e5eaf0;
+            border-radius: 12px;
+            padding: 23px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+        }
+
+        .card-header h3 {
+            font-size: 17px;
+        }
+
+        .view {
+            color: #e88900;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        /* ================= AMI ================= */
+
+        .ami-card {
+            border: 1px solid #e9edf2;
+            border-radius: 9px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .ami-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ami-name {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ami-icon {
+            width: 40px;
+            height: 40px;
+            background: #fff3df;
+            color: #ed8b00;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ami-name strong {
+            font-size: 14px;
+        }
+
+        .ami-name small {
+            display: block;
+            color: #8993a4;
+            margin-top: 4px;
+        }
+
+        .status {
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status.available {
+            background: #e9f9ef;
+            color: #1b9954;
+        }
+
+        .status.creating {
+            background: #fff5df;
+            color: #d98900;
+        }
+
+        .ami-info {
+            display: flex;
+            gap: 30px;
+            margin-top: 14px;
+            color: #6d7888;
+            font-size: 12px;
+        }
+
+        .ami-actions {
+            margin-top: 14px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .small-btn {
+            padding: 7px 11px;
+            border: 1px solid #dfe5ec;
+            background: white;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .small-btn.launch {
+            background: #ff9900;
+            color: white;
+            border-color: #ff9900;
+        }
+
+        /* ================= INSTANCE ================= */
+
+        .instance {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 15px 0;
+            border-bottom: 1px solid #edf0f4;
+        }
+
+        .instance:last-child {
+            border-bottom: none;
+        }
+
+        .instance-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            background: #edf7ff;
+            color: #3586d8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .instance-info {
+            flex: 1;
+        }
+
+        .instance-info strong {
+            font-size: 13px;
+        }
+
+        .instance-info small {
+            display: block;
+            color: #8993a4;
+            margin-top: 4px;
+        }
+
+        /* ================= ACTIVITY ================= */
+
+        .activity {
+            margin-top: 22px;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 13px;
+            margin-bottom: 18px;
+        }
+
+        .activity-dot {
+            width: 9px;
+            height: 9px;
+            margin-top: 5px;
+            border-radius: 50%;
+            background: #ff9900;
+        }
+
+        .activity-item p {
+            font-size: 13px;
+        }
+
+        .activity-item small {
+            display: block;
+            color: #929baa;
+            margin-top: 4px;
+        }
+
+        /* ================= MODAL ================= */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(20, 28, 40, 0.45);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .modal-box {
+            width: 500px;
+            background: white;
+            border-radius: 14px;
+            padding: 28px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .close {
+            cursor: pointer;
+            font-size: 20px;
+            color: #8b95a5;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #dce2e9;
+            border-radius: 7px;
+            outline: none;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media(max-width: 1100px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(max-width: 750px) {
+            .sidebar {
+                width: 70px;
+                padding: 20px 8px;
+            }
+
+            .logo h2,
+            .nav-item span,
+            .nav-title {
+                display: none;
+            }
+
+            .logo {
+                justify-content: center;
+            }
+
+            .main {
+                margin-left: 70px;
+            }
+
+            .search {
+                width: 200px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        <div class="logo-icon">☁</div>
+
+        <h2>
+            Cloud<span>Forge</span>
+        </h2>
+    </div>
+
+    <div class="nav-title">Cloud Management</div>
+
+    <div class="nav-item active">
+        <div class="nav-icon">▦</div>
+        <span>Dashboard</span>
+    </div>
+
+    <div class="nav-item">
+        <div class="nav-icon">▣</div>
+        <span>AMI Images</span>
+    </div>
+
+    <div class="nav-item">
+        <div class="nav-icon">◉</div>
+        <span>EC2 Instances</span>
+    </div>
+
+    <div class="nav-item">
+        <div class="nav-icon">◇</div>
+        <span>Snapshots</span>
+    </div>
+
+    <div class="nav-title">Infrastructure</div>
+
+    <div class="nav-item">
+        <div class="nav-icon">⬡</div>
+        <span>VPC</span>
+    </div>
+
+    <div class="nav-item">
+        <div class="nav-icon">⚙</div>
+        <span>Security Groups</span>
+    </div>
+
+    <div class="nav-item">
+        <div class="nav-icon">⌁</div>
+        <span>Network</span>
+    </div>
+
+    <div class="nav-title">System</div>
+
+    <div class="nav-item">
+        <div class="nav-icon">⚙</div>
+        <span>Settings</span>
+    </div>
+
+</aside>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div class="search">
+            <span class="search-icon">⌕</span>
+            <input
+                type="text"
+                placeholder="Search AMIs, instances..."
+            >
+        </div>
+
+        <div class="profile">
+
+            <div class="profile-avatar">
+                SC
+            </div>
+
+            <div class="profile-text">
+                <strong>Cloud Admin</strong>
+                <small>ap-south-1</small>
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- CONTENT -->
+
+    <section class="content">
+
+        <!-- TITLE -->
+
+        <div class="page-title">
+
+            <div>
+                <h1>Cloud Infrastructure</h1>
+
+                <p>
+                    Manage your AMIs and launch EC2 instances
+                </p>
+            </div>
+
+            <button
+                class="btn btn-primary"
+                onclick="openModal()"
+            >
+                + Launch EC2
+            </button>
+
+        </div>
+
+
+        <!-- STATS -->
+
+        <div class="stats">
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <span class="stat-label">
+                        AMI Images
+                    </span>
+
+                    <div class="stat-icon orange">
+                        ▣
+                    </div>
+
+                </div>
+
+                <div class="stat-number">
+                    12
+                </div>
+
+                <div class="stat-change">
+                    ↑ 2 this month
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <span class="stat-label">
+                        EC2 Instances
+                    </span>
+
+                    <div class="stat-icon blue">
+                        ◉
+                    </div>
+
+                </div>
+
+                <div class="stat-number">
+                    8
+                </div>
+
+                <div class="stat-change">
+                    ↑ 3 running
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <span class="stat-label">
+                        Running
+                    </span>
+
+                    <div class="stat-icon green">
+                        ✓
+                    </div>
+
+                </div>
+
+                <div class="stat-number">
+                    6
+                </div>
+
+                <div class="stat-change">
+                    75% utilization
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <span class="stat-label">
+                        Storage
+                    </span>
+
+                    <div class="stat-icon purple">
+                        ◇
+                    </div>
+
+                </div>
+
+                <div class="stat-number">
+                    148 GB
+                </div>
+
+                <div class="stat-change">
+                    ↑ 12 GB this month
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- DASHBOARD -->
+
+        <div class="dashboard-grid">
+
+
+            <!-- AMI SECTION -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3>
+                        Available AMI Images
+                    </h3>
+
+                    <span class="view">
+                        View all →
+                    </span>
+
+                </div>
+
+
+                <!-- AMI 1 -->
+
+                <div class="ami-card">
+
+                    <div class="ami-header">
+
+                        <div class="ami-name">
+
+                            <div class="ami-icon">
+                                ☁
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Ubuntu Server 24.04
+                                </strong>
+
+                                <small>
+                                    ami-0abc123456789
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                        <span class="status available">
+                            Available
+                        </span>
+
+                    </div>
+
+
+                    <div class="ami-info">
+
+                        <span>
+                            Architecture: x86_64
+                        </span>
+
+                        <span>
+                            Root: EBS
+                        </span>
+
+                        <span>
+                            Size: 8 GB
+                        </span>
+
+                    </div>
+
+
+                    <div class="ami-actions">
+
+                        <button
+                            class="small-btn launch"
+                            onclick="openModal()"
+                        >
+                            Launch Instance
+                        </button>
+
+                        <button class="small-btn">
+                            Details
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- AMI 2 -->
+
+                <div class="ami-card">
+
+                    <div class="ami-header">
+
+                        <div class="ami-name">
+
+                            <div class="ami-icon">
+                                ☁
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Amazon Linux 2023
+                                </strong>
+
+                                <small>
+                                    ami-0def987654321
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                        <span class="status available">
+                            Available
+                        </span>
+
+                    </div>
+
+
+                    <div class="ami-info">
+
+                        <span>
+                            Architecture: x86_64
+                        </span>
+
+                        <span>
+                            Root: EBS
+                        </span>
+
+                        <span>
+                            Size: 10 GB
+                        </span>
+
+                    </div>
+
+
+                    <div class="ami-actions">
+
+                        <button
+                            class="small-btn launch"
+                            onclick="openModal()"
+                        >
+                            Launch Instance
+                        </button>
+
+                        <button class="small-btn">
+                            Details
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- AMI 3 -->
+
+                <div class="ami-card">
+
+                    <div class="ami-header">
+
+                        <div class="ami-name">
+
+                            <div class="ami-icon">
+                                ☁
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Node.js Production
+                                </strong>
+
+                                <small>
+                                    ami-045xyz789abc
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                        <span class="status creating">
+                            Creating
+                        </span>
+
+                    </div>
+
+
+                    <div class="ami-info">
+
+                        <span>
+                            Architecture: x86_64
+                        </span>
+
+                        <span>
+                            Root: EBS
+                        </span>
+
+                        <span>
+                            Size: 12 GB
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT SIDE -->
+
+            <div>
+
+
+                <!-- EC2 -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h3>
+                            EC2 Instances
+                        </h3>
+
+                        <span class="view">
+                            View all →
+                        </span>
+
+                    </div>
+
+
+                    <div class="instance">
+
+                        <div class="instance-icon">
+                            ◉
+                        </div>
+
+                        <div class="instance-info">
+
+                            <strong>
+                                web-server-01
+                            </strong>
+
+                            <small>
+                                t3.micro · 10.0.1.21
+                            </small>
+
+                        </div>
+
+                        <span class="status available">
+                            Running
+                        </span>
+
+                    </div>
+
+
+                    <div class="instance">
+
+                        <div class="instance-icon">
+                            ◉
+                        </div>
+
+                        <div class="instance-info">
+
+                            <strong>
+                                api-server
+                            </strong>
+
+                            <small>
+                                t3.small · 10.0.1.25
+                            </small>
+
+                        </div>
+
+                        <span class="status available">
+                            Running
+                        </span>
+
+                    </div>
+
+
+                    <div class="instance">
+
+                        <div class="instance-icon">
+                            ◉
+                        </div>
+
+                        <div class="instance-info">
+
+                            <strong>
+                                database-server
+                            </strong>
+
+                            <small>
+                                t3.medium · 10.0.1.30
+                            </small>
+
+                        </div>
+
+                        <span class="status creating">
+                            Stopped
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACTIVITY -->
+
+                <div class="card activity">
+
+                    <div class="card-header">
+
+                        <h3>
+                            Recent Activity
+                        </h3>
+
+                    </div>
+
+
+                    <div class="activity-item">
+
+                        <div class="activity-dot"></div>
+
+                        <div>
+
+                            <p>
+                                EC2 instance
+                                <strong>web-server-01</strong>
+                                launched
+                            </p>
+
+                            <small>
+                                5 minutes ago
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="activity-item">
+
+                        <div class="activity-dot"></div>
+
+                        <div>
+
+                            <p>
+                                AMI
+                                <strong>Ubuntu Production</strong>
+                                created
+                            </p>
+
+                            <small>
+                                24 minutes ago
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="activity-item">
+
+                        <div class="activity-dot"></div>
+
+                        <div>
+
+                            <p>
+                                Snapshot
+                                <strong>snap-09281</strong>
+                                completed
+                            </p>
+
+                            <small>
+                                1 hour ago
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- ================= MODAL ================= -->
+
+<div class="modal" id="launchModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                Launch EC2 Instance
+            </h2>
+
+            <span
+                class="close"
+                onclick="closeModal()"
+            >
+                ×
+            </span>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Select AMI
+            </label>
+
+            <select id="ami">
+
+                <option>
+                    Ubuntu Server 24.04
+                </option>
+
+                <option>
+                    Amazon Linux 2023
+                </option>
+
+                <option>
+                    Node.js Production
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Instance Type
+            </label>
+
+            <select id="instanceType">
+
+                <option>
+                    t3.micro
+                </option>
+
+                <option>
+                    t3.small
+                </option>
+
+                <option>
+                    t3.medium
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Instance Name
+            </label>
+
+            <input
+                id="instanceName"
+                type="text"
+                placeholder="e.g. production-server"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Key Pair
+            </label>
+
+            <select id="keyPair">
+
+                <option value="">
+                    Select Key Pair
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Security Group
+            </label>
+
+            <select id="securityGroup">
+
+                <option value="">
+                    Select Security Group
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Subnet
+            </label>
+
+            <select id="subnet">
+
+                <option value="">
+                    Select Subnet
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                class="btn btn-secondary"
+                onclick="closeModal()"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="btn btn-primary"
+                onclick="launchInstance()"
+            >
+                Launch Instance
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+async function loadDashboard() {
+    try {
+        const [amiResponse, instanceResponse] = await Promise.all([
+            fetch("/api/amis"),
+            fetch("/api/instances")
+        ]);
+
+        const amiData = await amiResponse.json();
+        const instanceData = await instanceResponse.json();
+
+        if (amiData.success) {
+            renderAMIs(amiData.amis);
+            updateAMICount(amiData.count);
+            updateAMIDropdown(amiData.amis);
+        }
+
+        if (instanceData.success) {
+            renderInstances(instanceData.instances);
+            updateInstanceStats(instanceData.instances);
+        }
+
+    } catch (error) {
+        console.error("Dashboard loading error:", error);
+    }
+}
+
+
+/* ================= AMIs ================= */
+
+function renderAMIs(amis) {
+
+    const amiContainer =
+        document.querySelector(".dashboard-grid > .card");
+
+    if (!amiContainer) return;
+
+    let html = `
+        <div class="card-header">
+            <h3>Available AMI Images</h3>
+            <span class="view">${amis.length} available</span>
+        </div>
+    `;
+
+    amis.forEach(ami => {
+
+        html += `
+            <div class="ami-card">
+
+                <div class="ami-header">
+
+                    <div class="ami-name">
+
+                        <div class="ami-icon">
+                            ☁
+                        </div>
+
+                        <div>
+                            <strong>${ami.name}</strong>
+                            <small>${ami.id}</small>
+                        </div>
+
+                    </div>
+
+                    <span class="status available">
+                        ${ami.state}
+                    </span>
+
+                </div>
+
+                <div class="ami-info">
+
+                    <span>
+                        Architecture: ${ami.architecture}
+                    </span>
+
+                    <span>
+                        Root: ${ami.rootDevice.toUpperCase()}
+                    </span>
+
+                </div>
+
+                <div class="ami-actions">
+
+                    <button
+                        class="small-btn launch"
+                        onclick="openLaunchModal('${ami.id}')">
+                        Launch Instance
+                    </button>
+
+                    <button
+                        class="small-btn"
+                        onclick="showAMI('${ami.id}')">
+                        Details
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+    });
+
+    amiContainer.innerHTML = html;
+}
+
+
+/* ================= EC2 INSTANCES ================= */
+
+function renderInstances(instances) {
+
+    const instanceContainer =
+        document.querySelector(
+            ".dashboard-grid > div:nth-child(2) .card"
+        );
+
+    if (!instanceContainer) return;
+
+    let html = `
+        <div class="card-header">
+            <h3>EC2 Instances</h3>
+            <span class="view">${instances.length} total</span>
+        </div>
+    `;
+
+    instances
+        .filter(instance => instance.state !== "terminated")
+        .forEach(instance => {
+
+            const statusClass =
+                instance.state === "running"
+                    ? "available"
+                    : "creating";
+
+            const ip =
+                instance.publicIp !== "-"
+                    ? instance.publicIp
+                    : instance.privateIp;
+
+            html += `
+                <div class="instance">
+
+                    <div class="instance-icon">
+                        ◉
+                    </div>
+
+                    <div class="instance-info">
+
+                        <strong>
+                            ${instance.name}
+                        </strong>
+
+                        <small>
+                            ${instance.type} · ${ip}
+                        </small>
+
+                    </div>
+
+                    <span class="status ${statusClass}">
+                        ${instance.state}
+                    </span>
+
+                </div>
+            `;
+        });
+
+    instanceContainer.innerHTML = html;
+}
+
+
+/* ================= STATISTICS ================= */
+
+function updateAMICount(count) {
+
+    const statNumbers =
+        document.querySelectorAll(".stat-number");
+
+    if (statNumbers[0]) {
+        statNumbers[0].textContent = count;
+    }
+}
+
+
+function updateInstanceStats(instances) {
+
+    const activeInstances =
+        instances.filter(
+            instance => instance.state !== "terminated"
+        );
+
+    const runningInstances =
+        instances.filter(
+            instance => instance.state === "running"
+        );
+
+    const statNumbers =
+        document.querySelectorAll(".stat-number");
+
+    if (statNumbers[1]) {
+        statNumbers[1].textContent =
+            activeInstances.length;
+    }
+
+    if (statNumbers[2]) {
+        statNumbers[2].textContent =
+            runningInstances.length;
+    }
+}
+
+
+/* ================= AMI DROPDOWN ================= */
+
+function updateAMIDropdown(amis) {
+
+    const select =
+        document.getElementById("ami");
+
+    if (!select) return;
+
+    select.innerHTML = "";
+
+    amis.forEach(ami => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = ami.id;
+
+        option.textContent =
+            `${ami.name} (${ami.id})`;
+
+        select.appendChild(option);
+    });
+}
+
+
+/* ================= MODAL ================= */
+
+function openModal() {
+
+    document
+        .getElementById("launchModal")
+        .style.display = "flex";
+}
+
+
+function openLaunchModal(amiId) {
+
+    openModal();
+
+    const select =
+        document.getElementById("ami");
+
+    if (select) {
+        select.value = amiId;
+    }
+}
+
+
+function closeModal() {
+
+    document
+        .getElementById("launchModal")
+        .style.display = "none";
+}
+
+
+/* ================= LOAD LAUNCH OPTIONS ================= */
+
+async function loadLaunchOptions() {
+
+    try {
+
+        const [
+            keyResponse,
+            securityResponse,
+            subnetResponse
+        ] = await Promise.all([
+            fetch("/api/keypairs"),
+            fetch("/api/security-groups"),
+            fetch("/api/subnets")
+        ]);
+
+        const keyData = await keyResponse.json();
+        const securityData = await securityResponse.json();
+        const subnetData = await subnetResponse.json();
+
+        const keySelect = document.getElementById("keyPair");
+
+        keySelect.innerHTML =
+            '<option value="">Select Key Pair</option>';
+
+        if (keyData.success) {
+
+            keyData.keypairs.forEach(key => {
+
+                const option = document.createElement("option");
+
+                option.value = key.name;
+                option.textContent = key.name;
+
+                keySelect.appendChild(option);
+
+            });
+
+        }
+
+        const securitySelect =
+            document.getElementById("securityGroup");
+
+        securitySelect.innerHTML =
+            '<option value="">Select Security Group</option>';
+
+        if (securityData.success) {
+
+            securityData.securityGroups.forEach(group => {
+
+                const option = document.createElement("option");
+
+                option.value = group.id;
+
+                option.textContent =
+                    `${group.name} (${group.id})`;
+
+                securitySelect.appendChild(option);
+
+            });
+
+        }
+
+        const subnetSelect =
+            document.getElementById("subnet");
+
+        subnetSelect.innerHTML =
+            '<option value="">Select Subnet</option>';
+
+        if (subnetData.success) {
+
+            subnetData.subnets.forEach(subnet => {
+
+                const option = document.createElement("option");
+
+                option.value = subnet.id;
+
+                option.textContent =
+                    `${subnet.name} - ${subnet.availabilityZone} - ${subnet.cidr}`;
+
+                subnetSelect.appendChild(option);
+
+            });
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Launch options loading error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* ================= LAUNCH EC2 ================= */
+
+async function launchInstance() {
+
+    const amiId =
+        document.getElementById("ami").value;
+
+    const instanceType =
+        document.getElementById("instanceType").value;
+
+    const instanceName =
+        document.getElementById("instanceName").value.trim();
+
+    const keyName =
+        document.getElementById("keyPair").value;
+
+    const securityGroupId =
+        document.getElementById("securityGroup").value;
+
+    const subnetId =
+        document.getElementById("subnet").value;
+
+
+    if (!amiId) {
+        alert("Please select an AMI.");
+        return;
+    }
+
+    if (!instanceName) {
+        alert("Please enter an instance name.");
+        return;
+    }
+
+    if (!keyName) {
+        alert("Please select a Key Pair.");
+        return;
+    }
+
+    if (!securityGroupId) {
+        alert("Please select a Security Group.");
+        return;
+    }
+
+    if (!subnetId) {
+        alert("Please select a Subnet.");
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            "/api/ec2/launch",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    amiId: amiId,
+                    instanceType: instanceType,
+                    name: instanceName,
+                    keyName: keyName,
+                    securityGroupId: securityGroupId,
+                    subnetId: subnetId
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+
+            alert(
+                "Launch failed:\n\n" +
+                data.message
+            );
+
+            return;
+        }
+
+        alert(
+            "EC2 launch initiated!\n\n" +
+            "Instance ID: " +
+            data.instance.id
+        );
+
+        closeModal();
+
+        document.getElementById("instanceName").value = "";
+
+        setTimeout(loadDashboard, 5000);
+
+    } catch (error) {
+
+        console.error("Launch error:", error);
+
+        alert(
+            "Unable to connect to CloudForge API."
+        );
+
+    }
+
+}
+
+/* ================= AMI DETAILS ================= */
+
+function showAMI(amiId) {
+
+    alert(
+        "AMI ID:\n\n" +
+        amiId
+    );
+}
+
+
+/* ================= MODAL CLICK ================= */
+
+window.onclick = function(event) {
+
+    const modal =
+        document.getElementById("launchModal");
+
+    if (event.target === modal) {
+        closeModal();
+    }
+};
+
+
+/* ================= INITIAL LOAD ================= */
+
+loadDashboard();
+loadLaunchOptions();
+
+</script>
+
+</body>
+</html>
